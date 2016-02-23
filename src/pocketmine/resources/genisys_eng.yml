@@ -2,7 +2,7 @@
 
 #Version of this file
 config:
- version: 7
+ version: 11
 
 level:
  #Set if turn on the weather system
@@ -29,7 +29,7 @@ player:
  inventory-num: 36
  #Clear the inventory automatically when change the gamemode into creative
  auto-clear-inventory : true
- #TODO: Choose if keep experience when a player died
+ #Choose if keep experience when a player died
  keep-experience: false
 
 nether:
@@ -58,8 +58,17 @@ server:
  player-msg-type: 0
  login-msg: "§3@player joined the game"
  logout-msg: "§3@player left the game"
- #If read recipes from json
- read-recipes-from-json: false
+ #Choose if read recipes from json
+ recipes-from-json: false
+ #Choose if read creative item from json
+ creative-items-from-json: false
+ #Choose if minecart is free moving, follow rails or disable
+ #-1=disable, 0=free moving, 1=follow rails
+ minecart-moving-type: 0
+ #Choose if enable movement check (no more pull back)
+ check-movement: true
+ #Set if enable limited creative (cannot drop item, cannot interact Chests and so on)
+ limited-creative: true
 
 redstone:
  ##########################################
@@ -68,8 +77,8 @@ redstone:
  #If not true then the redstone won't work#
  ##########################################
  enable: false
- #Choose if allow fake low frequancy pulse
- allow-fake-low-frequency-pulse: false
+ #Choose if allow frequancy pulse
+ frequency-pulse: false
  #Set the frequency of pulse, Default: 1s
  pulse-frequency: 1
 

@@ -27,4 +27,8 @@ abstract class Armor extends Item{
 	public function getMaxStackSize() : int {
 		return 1;
 	}
+
+	public function isArmor(){
+		return true;
+	}
 }

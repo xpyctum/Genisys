@@ -2,20 +2,21 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\event\player\PlayerPickupExpOrbEvent;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
 class ExperienceOrb extends Entity{
 	const NETWORK_ID = 69;
 
-	public $width = 0.1;
-	public $length = 0.1;
-	public $height = 0.1;
+	public $width = 0.25;
+	public $length = 0.25;
+	public $height = 0.25;
 
-	protected $gravity = 0;
+	protected $gravity = 0.04;
 	protected $drag = 0;
 	
-	public $experience = 0;
+	protected $experience = 0;
 
 	public function initEntity(){
 		parent::initEntity();
@@ -46,6 +47,7 @@ class ExperienceOrb extends Entity{
 		}
 		
 		$minDistance = PHP_INT_MAX;
+		$expectedPos = null;
 		foreach($this->getLevel()->getEntities() as $e){
 			if($e instanceof Player){
 				if($e->distance($this) <= $minDistance) {
@@ -55,7 +57,6 @@ class ExperienceOrb extends Entity{
 			} 
 		}
 
-		$hasFollower = false;
 		if($minDistance < PHP_INT_MAX){
 			$moveSpeed = 0.7;
 			$motX = ($expectedPos->getX() - $this->x) / 8;
@@ -65,47 +66,28 @@ class ExperienceOrb extends Entity{
 			$motC = 1 - $motSqrt;
 		
 			if($motC > 0){
-				$hasFollower = true;
 				$motC *= $motC;
 				$this->motionX = $motX / $motSqrt * $motC * $moveSpeed;
 				$this->motionY = $motY / $motSqrt * $motC * $moveSpeed;
 				$this->motionZ = $motZ / $motSqrt * $motC * $moveSpeed;
 			}
 
-			if($minDistance <= 1.8){
+			//if(!$this->onGround) $this->motionY -= $this->gravity;
+
+			if($minDistance <= 1.3){
 				if($this->getLevel()->getServer()->expEnabled){
 					if($this->getExperience() > 0){
 						$this->kill();
 						$this->close();
-						$expectedPos->addExperience($this->getExperience());
+
+						$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new PlayerPickupExpOrbEvent($expectedPos, $this->getExperience()));
+						if(!$ev->isCancelled()) $expectedPos->addExperience($this->getExperience());
 					}
 				}
 			}
 		}
 
-		//if(!$hasFollower and !$this->onGround) $this->motionY -= 0.04;
-		//TODO: Add gravity pull
-			/*if($expectedPos->getX() > $this->x) $this->motionX = $moveSpeed;
-			
-			if($expectedPos->getX() < $this->x) $this->motionX = -$moveSpeed;
-			
-			if($expectedPos->getZ() > $this->z) $this->motionZ = $moveSpeed;
-			
-			if($expectedPos->getZ() < $this->z) $this->motionZ = -$moveSpeed;
-			
-			if($expectedPos->getX() == $this->x) $this->motionX = 0;
-			if($expectedPos->getZ() == $this->z) $this->motionZ = 0;
-			
-			if(($expectedPos->getY() + $expectedPos->getEyeHeight() / 2) > $this->y){
-				$this->motionY = $moveSpeed;
-			}
-			
-			if(($expectedPos->getY() + $expectedPos->getEyeHeight()) < $this->y){
-				$this->motionY = -$moveSpeed;
-			}*/
-			
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
-		//}
 		
 		$this->updateMovement();
 		

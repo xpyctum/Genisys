@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# start.sh for Genisys #
+# start.sh file for Genisys #
 #
 # Please input ./start.sh to start server #
 
@@ -39,7 +39,7 @@ if [ "$PHP_BINARY" == "" ]; then
 	if [ -f ./bin/php7/bin/php ]; then
 		export PHPRC=""
 		PHP_BINARY="./bin/php7/bin/php"
-	elif [ type php 2>/dev/null ]; then
+	elif type php 2>/dev/null; then
 		PHP_BINARY=$(type -p php)
 	else
 		echo "Couldn't find a working PHP binary, please use the installer."
@@ -50,8 +50,8 @@ fi
 if [ "$POCKETMINE_FILE" == "" ]; then
 	if [ -f ./PocketMine-iTX.phar ]; then
 		POCKETMINE_FILE="./PocketMine-iTX.phar"
-	elif [ -f ./Genisys_1.0dev_#*.phar ]; then
-	    POCKETMINE_FILE="./Genisys_1.0dev_*.phar"
+	elif [ -f ./Genisys*.phar ]; then
+	    POCKETMINE_FILE="./Genisys*.phar"
 	elif [ -f ./PocketMine-MP.phar ]; then
 		POCKETMINE_FILE="./PocketMine-MP.phar"
 	elif [ -f ./src/pocketmine/PocketMine.php ]; then

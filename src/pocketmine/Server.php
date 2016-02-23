@@ -1,12 +1,23 @@
 <?php
-/**
- * Author: PeratX
- * Time: 2015/12/25 15:10
- * Copyright(C) 2011-2015 iTX Technologies LLC.
- * All rights reserved.
+
+/*
  *
- * OpenGenisys Project
- */
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
+*/
 
 namespace pocketmine;
 
@@ -26,6 +37,7 @@ use pocketmine\entity\FishingHook;
 use pocketmine\entity\Human;
 use pocketmine\entity\Item as DroppedItem;
 use pocketmine\entity\PrimedTNT;
+use pocketmine\entity\Rabbit;
 use pocketmine\entity\Snowball;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
@@ -45,6 +57,7 @@ use pocketmine\inventory\Recipe;
 use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentLevelTable;
 use pocketmine\item\Item;
 use pocketmine\lang\BaseLang;
 use pocketmine\level\format\anvil\Anvil;
@@ -53,6 +66,7 @@ use pocketmine\level\format\LevelProviderManager;
 use pocketmine\level\format\mcregion\McRegion;
 use pocketmine\level\generator\biome\Biome;
 use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\Void;
 use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\hell\Nether;
 use pocketmine\level\generator\normal\Normal;
@@ -94,9 +108,13 @@ use pocketmine\scheduler\SendUsageTask;
 use pocketmine\scheduler\ServerScheduler;
 use pocketmine\tile\BrewingStand;
 use pocketmine\tile\Chest;
+use pocketmine\tile\Dispenser;
+use pocketmine\tile\DLDetector;
+use pocketmine\tile\Dropper;
 use pocketmine\tile\EnchantTable;
 use pocketmine\tile\FlowerPot;
 use pocketmine\tile\Furnace;
+use pocketmine\tile\ItemFrame;
 use pocketmine\tile\MobSpawner;
 use pocketmine\tile\Sign;
 use pocketmine\tile\Skull;
@@ -339,7 +357,7 @@ class Server{
 	public $dserverPlayers = 0;
 	public $dserverAllPlayers = 0;
 	public $redstoneEnabled = false;
-	public $allowFakeLowFrequencyPulse = false;
+	public $allowFrequencyPulse = false;
 	public $anviletEnabled = false;
 	public $pulseFrequency = 20;
 	public $playerMsgType = self::PLAYER_MSG_TYPE_MESSAGE;
@@ -347,7 +365,12 @@ class Server{
 	public $playerLogoutMsg = "";
 	public $antiFly = false;
 	public $asyncChunkRequest = true;
-	public $readRecipesFromJson = false;
+	public $recipesFromJson = false;
+	public $creativeItemsFromJson = false;
+	public $minecartMovingType = 0;
+	public $checkMovement = false;
+	public $keepExperience = false;
+	public $limitedCreative = true;
 
 	/** @var CraftingDataPacket */
 	private $recipeList = null;
@@ -836,7 +859,7 @@ class Server{
 	/**
 	 * @param string $name
 	 *
-	 * @return Compound
+	 * @return CompoundTag
 	 */
 	public function getOfflinePlayerData($name){
 		$name = strtolower($name);
@@ -1483,7 +1506,7 @@ class Server{
 	 * @return bool
 	 */
 	public function isWhitelisted($name){
-		return !$this->hasWhitelist() or $this->operators->exists($name, true) or $this->whitelist->exists($name, true);
+		return !$this->hasWhitelist() or $this->whitelist->exists($name, true);
 	}
 
 	/**
@@ -1573,6 +1596,7 @@ class Server{
 		$this->foodEnabled = $this->getAdvancedProperty("player.hunger", true);
 		$this->expEnabled = $this->getAdvancedProperty("player.experience", true);
 		$this->keepInventory = $this->getAdvancedProperty("player.keep-inventory", false);
+		$this->keepExperience = $this->getAdvancedProperty("player.keep-experience", false);
 		$this->netherEnabled = $this->getAdvancedProperty("nether.allow-nether", false);
 		$this->netherName = $this->getAdvancedProperty("nether.level-name", "nether");
 		$this->weatherChangeTime = $this->getAdvancedProperty("level.weather-change-time", 12000);
@@ -1615,13 +1639,17 @@ class Server{
 			"serverList" => explode(";", $this->getAdvancedProperty("dserver.server-list", ""))
 		];
 		$this->redstoneEnabled = $this->getAdvancedProperty("redstone.enable", false);
-		$this->allowFakeLowFrequencyPulse = $this->getAdvancedProperty("redstone.allow-fake-low-frequency-pulse", false);
+		$this->allowFrequencyPulse = $this->getAdvancedProperty("redstone.allow-frequency-pulse", false);
 		$this->pulseFrequency = $this->getAdvancedProperty("redstone.pulse-frequency", 20);
 		$this->anviletEnabled = $this->getAdvancedProperty("server.allow-anvilandenchanttable", false);
 		$this->getLogger()->setWrite(!$this->getAdvancedProperty("server.disable-log", false));
 		$this->antiFly = $this->getAdvancedProperty("server.anti-fly", true);
 		$this->asyncChunkRequest = $this->getAdvancedProperty("server.async-chunk-request", true);
-		$this->readRecipesFromJson = $this->getAdvancedProperty("server.read-recipes-from-json", false);
+		$this->recipesFromJson = $this->getAdvancedProperty("server.recipes-from-json", false);
+		$this->creativeItemsFromJson = $this->getAdvancedProperty("server.creative-items-from-json", false);
+		$this->minecartMovingType = $this->getAdvancedProperty("server.minecart-moving-type", 0);
+		$this->checkMovement = $this->getAdvancedProperty("server.check-movement", true);
+		$this->limitedCreative = $this->getAdvancedProperty("server.limited-creative", true);
 	}
 
 	/**
@@ -1707,7 +1735,7 @@ class Server{
 		   §5PocketMine-iTX §3Genisys §fis a fork of PocketMine-MP.
 		   Powered by §5iTX Technologies LLC.
 		   §fVersion: §6" . $this->getPocketMineVersion() . "
-		   §fClient Version: §d0.13.1 alpha
+		   §fClient Version: §d". \pocketmine\MINECRAFT_VERSION ."
 		   §fYou could get the lastest code on https://github.com/iTXTech/Genisys
 		   §fDonate link: http://pl.zxda.net/plugins/203.html
 		   §f如果你在免费使用本核心，希望你可以进入上面的链接捐赠给我们，这会成为我们前进的动力。
@@ -1874,14 +1902,14 @@ class Server{
 
 			InventoryType::init(min(32, $this->inventoryNum)); //Bigger than 32 with cause problems
 			Block::init();
-			Item::init();
+			Item::init($this->creativeItemsFromJson);
 			Biome::init();
 			Effect::init();
 			Enchantment::init();
 			Attribute::init();
-			/** TODO: @deprecated */
+			EnchantmentLevelTable::init();
 			//TextWrapper::init();
-			$this->craftingManager = new CraftingManager($this->readRecipesFromJson);
+			$this->craftingManager = new CraftingManager($this->recipesFromJson);
 
 			$this->pluginManager = new PluginManager($this, $this->commandMap);
 			$this->pluginManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
@@ -1900,7 +1928,7 @@ class Server{
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
 
-			//$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "www.pocketmine.net"));
+			$this->updater = new AutoUpdater($this, $this->getProperty("auto-updater.host", "www.pocketmine.net"));
 
 			$this->enablePlugins(PluginLoadOrder::STARTUP);
 
@@ -1917,6 +1945,7 @@ class Server{
 			Generator::addGenerator(Normal::class, "default");
 			Generator::addGenerator(Nether::class, "hell");
 			Generator::addGenerator(Nether::class, "nether");
+			Generator::addGenerator(Void::class,"void");
 
 			foreach((array) $this->getProperty("worlds", []) as $name => $worldSetting){
 				if($this->loadLevel($name) === false){
@@ -1981,7 +2010,7 @@ class Server{
 			]), $this->dserverConfig["timer"]);
 
 			if($cfgVer != $advVer){
-				$this->logger->notice("You genisys.yml needs update");
+				$this->logger->notice("Your genisys.yml needs update");
 				$this->logger->notice("Current Version: $advVer   Latest Version: $cfgVer");
 			}
 
@@ -1993,8 +2022,9 @@ class Server{
 		}
 	}
 
+    //@Deprecated
 	public function transferPlayer(Player $player, $address, $port = 19132){
-		$this->logger->error("This function (transferPlayer) has been deprecated.");
+		$this->logger->error("This function (transferPlayer) has been deprecated. A new method may be available soon");
 	}
 	/*$ev = new PlayerTransferEvent($player, $address, $port);
 	$this->getPluginManager()->callEvent($ev);
@@ -2185,11 +2215,8 @@ private function lookupAddress($address) {
 		foreach($players as $p){
 			if($p->isConnected()){
 				$targets[] = $this->identifiers[spl_object_hash($p)];
-				//$targets[] = $p->getName();
 			}
 		}
-
-		//$this->broadcastPacketsCallback(zlib_encode($str, ZLIB_ENCODING_DEFLATE, $this->networkCompressionLevel), $targets);//临时修复
 
 		if(!$forceSync and $this->networkCompressionAsync){
 			$task = new CompressBatchedTask($str, $targets, $this->networkCompressionLevel);
@@ -3003,6 +3030,7 @@ private function lookupAddress($address) {
 		Entity::registerEntity(FishingHook::class);
 		Entity::registerEntity(Egg::class);
 		Entity::registerEntity(ZombieVillager::class);
+		Entity::registerEntity(Rabbit::class);
 
 		Entity::registerEntity(Human::class, true);
 	}
@@ -3016,5 +3044,9 @@ private function lookupAddress($address) {
 		Tile::registerTile(FlowerPot::class);
 		Tile::registerTile(Skull::class);
 		Tile::registerTile(MobSpawner::class);
+		Tile::registerTile(ItemFrame::class);
+		Tile::registerTile(Dispenser::class);
+		Tile::registerTile(Dropper::class);
+		Tile::registerTile(DLDetector::class);
 	}
 }

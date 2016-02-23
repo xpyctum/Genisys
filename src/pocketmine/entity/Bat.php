@@ -1,21 +1,24 @@
 <?php
+
+/**
+ * OpenGenisys Project
+ *
+ * @author PeratX
+ */
+
 namespace pocketmine\entity;
 
-use pocketmine\network\Network;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
-use pocketmine\entity\Animal;
-use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\item\Item as ItemItem;
 use pocketmine\math\Vector3;
-use pocketmine\math\Math;
 
 class Bat extends Animal{
-	
 	const NETWORK_ID = 19;
+
 	public $width = 0.3;
 	public $length = 0.9;
 	public $height = 1.8;
+
 	public $gravity = 0;
 	public $drag = 0.0001;
 	
@@ -44,7 +47,7 @@ class Bat extends Animal{
 	}
 
 
-	public function onUpdate($currentTick){
+	/*public function onUpdate($currentTick){
 		if($this->closed !== false){
 			return false;
 		}
@@ -72,7 +75,7 @@ class Bat extends Animal{
 			if(!$inWater){
 				//$this->motionY -= $this->gravity;
 				$this->swimDirection = null;
-			}else*/
+			}else*
 			if($this->swimDirection !== null){
 				if($this->motionX ** 2 + $this->motionY ** 2 + $this->motionZ ** 2 <= $this->swimDirection->lengthSquared()){
 					$this->motionX = $this->swimDirection->x * $this->swimSpeed;
@@ -114,12 +117,12 @@ class Bat extends Animal{
 		$this->timings->stopTiming();
 
 		return $hasUpdate or !$this->onGround or abs($this->motionX) > 0.00001 or abs($this->motionY) > 0.00001 or abs($this->motionZ) > 0.00001;
-	}
+	}*/
 	
 	public function spawnTo(Player $player){
 		$pk = new AddEntityPacket();
 		$pk->eid = $this->getId();
-		$pk->type = self::NETWORK_ID;
+		$pk->type = Bat::NETWORK_ID;
 		$pk->x = $this->x;
 		$pk->y = $this->y;
 		$pk->z = $this->z;
@@ -130,6 +133,7 @@ class Bat extends Animal{
 		$pk->pitch = $this->pitch;
 		$pk->metadata = $this->dataProperties;
 		$player->dataPacket($pk);
+
 		parent::spawnTo($player);
 	}
 }

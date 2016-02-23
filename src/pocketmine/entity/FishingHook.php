@@ -3,8 +3,8 @@
  * Author: PeratX
  * QQ: 1215714524
  * Time: 2016/1/7 16:41
- * Copyright(C) 2011-2016 iTX Technologies LLC.
- * All rights reserved.
+
+
  *
  * OpenGenisys Project
  */
@@ -19,6 +19,9 @@ use pocketmine\Player;
 class FishingHook extends Projectile{
 	const NETWORK_ID = 77;
 
+	const DATA_SOURCE_UUID = 23;
+	const DATA_TARGET_UUID = 24;
+
 	public $width = 0.2;
 	public $length = 0.2;
 	public $height = 0.2;
@@ -26,6 +29,7 @@ class FishingHook extends Projectile{
 	protected $drag = 0.04;
 
 	//public $canCollide = false;
+	/** @var Player */
 	public $owner = null;
 
 	public $results = [
@@ -36,8 +40,19 @@ class FishingHook extends Projectile{
 		return "Fishing Hook";
 	}
 
-	public function __construct(FullChunk $chunk, CompoundTag $nbt, Entity $shootingEntity = null){
-		parent::__construct($chunk, $nbt, $shootingEntity);
+	public function __construct(FullChunk $chunk, CompoundTag $nbt, Player $owner = null){
+		if($owner == null){
+			$this->close();
+			return;
+		}
+
+		parent::__construct($chunk, $nbt);
+
+		$this->owner = $owner;
+
+		$this->setDataProperty(self::DATA_NO_AI, self::DATA_TYPE_BYTE, 1);
+		$this->setDataProperty(self::DATA_SOURCE_UUID, self::DATA_TYPE_LONG, $this->owner->getId());
+		$this->setDataProperty(self::DATA_TARGET_UUID, self::DATA_TYPE_LONG, $this->getId());
 	}
 
 	public function initEntity(){
@@ -84,8 +99,7 @@ class FishingHook extends Projectile{
 		}
 
 		if($this->isInsideOfWater()) $this->motionY += 0.02;
-
-		if(!$this->isOnGround() and !$this->isCollided) $this->motionY -= $this->gravity;
+		elseif(!$this->isOnGround() and !$this->isCollided) $this->motionY -= $this->gravity;
 
 		$this->move($this->motionX, $this->motionY, $this->motionZ);
 
@@ -110,7 +124,10 @@ class FishingHook extends Projectile{
 	}
 
 	public function spawnTo(Player $player){
-		$this->setDataProperty(self::DATA_NO_AI, self::DATA_TYPE_BYTE, 1);
+		if(!$this->owner instanceof Player){
+			$this->close();
+			return;
+		}
 		$pk = new AddEntityPacket();
 		$pk->eid = $this->getId();
 		$pk->type = FishingHook::NETWORK_ID;

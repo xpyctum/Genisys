@@ -215,6 +215,8 @@ abstract class Entity extends Location implements Metadatable{
 	/** @var PressurePlate */
 	protected $activatedPressurePlates = [];
 
+	public $dropExp = [0, 0];
+
 
 	public function __construct(FullChunk $chunk, CompoundTag $nbt){
 		if($chunk === null or $chunk->getProvider() === null){
@@ -284,6 +286,20 @@ abstract class Entity extends Location implements Metadatable{
 
 		$this->scheduleUpdate();
 
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDropExpMin() : int{
+		return $this->dropExp[0];
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getDropExpMax() : int{
+		return $this->dropExp[1];
 	}
 
 	/**
@@ -421,7 +437,7 @@ abstract class Entity extends Location implements Metadatable{
 	 * @param CompoundTag   $nbt
 	 * @param            $args
 	 *
-	 * @return Entity
+	 * @return Entity|Projectile
 	 */
 	public static function createEntity($type, FullChunk $chunk, CompoundTag $nbt, ...$args){
 		if(isset(self::$knownEntities[$type])){
@@ -786,7 +802,7 @@ abstract class Entity extends Location implements Metadatable{
 			}
 
 			if($direction === 5){
-				$this->motionY = $force;
+				$this->motionZ = $force;
 
 				return true;
 			}
@@ -1465,6 +1481,11 @@ abstract class Entity extends Location implements Metadatable{
 	public function kill(){
 		$this->health = 0;
 		$this->scheduleUpdate();
+
+		if($this->getLevel()->getServer()->expEnabled) {
+			$exp = mt_rand($this->getDropExpMin(), $this->getDropExpMax());
+			if($exp > 0) $this->getLevel()->addExperienceOrb($this, $exp);
+		}
 	}
 
 	/**
@@ -1589,7 +1610,7 @@ abstract class Entity extends Location implements Metadatable{
 		}
 	}
 
-	public function setLinked($type = 0, Entity $entity = null){
+	public function setLinked($type = 0, Entity $entity){
 		if($type != 0 and $entity === null){
 			return false;
 		}
@@ -1617,6 +1638,7 @@ abstract class Entity extends Location implements Metadatable{
 				if($this->linkedEntity->getLinkedType()){
 					$this->linkedEntity->setLinked(0, $this);
 				}
+				$this->linkedEntity = null;
 				return true;
 			case 1:
 				if(!$entity->isAlive()){
@@ -1624,6 +1646,8 @@ abstract class Entity extends Location implements Metadatable{
 				}
 				$this->linkedEntity = $entity;
 				$this->linkedType = 1;
+				$entity->linkedEntity = $this;
+				$entity->linkedType = 1;
 				$pk = new SetEntityLinkPacket();
 				$pk->from = $entity->getId();
 				$pk->to = $this->getId();
@@ -1679,9 +1703,10 @@ abstract class Entity extends Location implements Metadatable{
 	}
 
 	/**
-	 * @param int  $propertyId ;
-	 * @param int  $id
+	 * @param      $propertyId
+	 * @param      $id
 	 * @param bool $value
+	 * @param int  $type
 	 */
 	public function setDataFlag($propertyId, $id, $value = true, $type = self::DATA_TYPE_BYTE){
 		if($this->getDataFlag($propertyId, $id) !== $value){

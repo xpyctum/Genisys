@@ -1,6 +1,6 @@
 [
 ![Genisys - PocketMine-iTX Core]
-(http://i13.tietuku.com/a09f334357d8a224.jpg)
+(http://i13.tietuku.com/aa044daf6ecb66a4.jpg)
 ]
 (#)
 
@@ -16,14 +16,17 @@
 ###Genisys
 
 [![Join the chat at https://gitter.im/iTXTech/Genisys](https://badges.gitter.im/iTXTech/Genisys.svg)](https://gitter.im/iTXTech/Genisys?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](http://mcper.cn:8080/job/Genisys/lastBuild/badge/icon)](http://mcper.cn:8080/job/Genisys/lastBuild/)
+[![Jenkins Build Status](http://jenkins.mcper.cn/buildStatus/icon?job=Genisys-master)](http://jenkins.mcper.cn/job/Genisys-master/)
+[![Travis-CI Build Status](https://travis-ci.org/iTXTech/Genisys.svg?branch=master)](https://travis-ci.org/iTXTech/Genisys)
 * One Core to rule them ALL
 * This core is an unofficial version of PocketMine-MP modified by DREAM STUDIO & iTX Technologies LLC.
 * Genisys is only a fork of PocketMine-MP and all original codes are written by PocketMine Team.
-* [**Click Here to get php7**](https://github.com/iTXTech/PHP-Genisys/tree/master/php7)
+* [**Click Here to get php7**](https://github.com/iTXTech/PHP-Genisys/)
+* [**Click Here to read dev docs**](http://docs.mcper.cn/en-US/)
 * Be free to create a _Pull Request_ or open an _Issue_. English and Chinese are both recommended. (Please do your best to use English because it is easy to communicate with worldwide.)
 
 ###Acknowledgements
+* Some features are merged from **@boybook**'s **FCCore**
 * Skull, FlowerPot are based on **@ImagicalCorp** ImagicalMine's work
 * AIs are based on **@Zzm317**'s amazing MyOwnWorld.
 * Painting and Brewing Stand are translated from **Nukkit** Project
@@ -35,16 +38,13 @@
 * **@FENGberd**'s encouragement
 * Our leaders are **@ishitatsuyuki** and **@jasonczc**
 
-###Jenkins CI
-Jenkins Server is moving and Jenkins server won't be available.<br>
-[**Click Here to go to Jenkins CI Page**](http://mcper.cn:8080/job/Genisys/)
+###Auto Build (CI) Pages
+[**Jenkins**](http://jenkins.mcper.cn/job/Genisys-master/)
+<br>
+[**Travis-CI**](https://travis-ci.org/iTXTech/Genisys)
 
-Temporary webdisk download:<br>
-China Baidu: http://pan.baidu.com/share/link?shareid=641012570&uk=2065873628 <br>
-Worldwide Google: https://drive.google.com/file/d/0B47xKpOkRL7JaU9ZNE9CRDVXTTA/view?usp=sharing
-
-###Documentation
-[**Click Here to go to Genisys Documentation Page**](http://mcper.cn/Genisys-Docs/)
+###Official Development Documentation
+[**Click Here to go to Genisys Official Development Documentation Page**](http://mcper.cn/Genisys-Docs/)
 
 ###Features
 * Performance optimization (Let 100+ players join in a server)
@@ -62,7 +62,7 @@ Worldwide Google: https://drive.google.com/file/d/0B47xKpOkRL7JaU9ZNE9CRDVXTTA/v
 * Splash Potions
 * Anvil
 * Better Crafting
-* Better Invenory
+* Better Inventory
 * More Items
 * Supported 0.13.1 skin format
 * Hunger (Based on Katana)
@@ -71,6 +71,10 @@ Worldwide Google: https://drive.google.com/file/d/0B47xKpOkRL7JaU9ZNE9CRDVXTTA/v
   pardoncid weather extractphar loadplugin lvdat biome)
 * With FolderPluginLoader
 * Monster Spawner
+* Item Frame
+* Dispenser and Dropper
+* Colorful Sheep
+* Different types of Boat, Villager and Rabbit
 * NOTICE: Please edit **genisys.yml** to enable all the features, including Redstone, MobAI, Nether and so on.
 
 ###To-Do List
@@ -85,35 +89,11 @@ Worldwide Google: https://drive.google.com/file/d/0B47xKpOkRL7JaU9ZNE9CRDVXTTA/v
 * LevelDB support for Windows
 
 ###Servers
-(In fact there are more than 80 servers in China using our core and most of them are better than us. Here are some servers set by us.)
+(Follows are the test servers built by us. In fact other servers used Genisys may be more professional than ours.)
 
-**Young Dream**<br>
-Address: **mcper.cn**<br>
+**Beer MC (A mini-game server)**<br>
+Address: **beermc.com**<br>
 Port: **19132**
-
-**Young Dream - Survival**<br>
-Address: **mcper.cn**<br>
-Port: **12345**
-
-**Young Dream - Happy Town**<br>
-Address: **mcper.cn**<br>
-Port: **666**
-
-**Sai Gao Server**<br>
-Address: **sgmcpe.com**<br>
-Port: **100**
-
-**That the sky**<br>
-Address: **g.mcpe.cc**<br>
-Port: **2333**
-
-**Test Server**<br>
-Address: **mcper.cn**<br>
-Port: **233**
-
-**Zhy WAC Survival Server**<br>
-Address: **umcpe.com**<br>
-Port: **888**
 
 <br><br>
 
@@ -122,11 +102,13 @@ Port: **888**
 ###创世纪
 
 [![Join the chat at https://gitter.im/iTXTech/Genisys](https://badges.gitter.im/iTXTech/Genisys.svg)](https://gitter.im/iTXTech/Genisys?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](http://mcper.cn:8080/job/Genisys/lastBuild/badge/icon)](http://mcper.cn:8080/job/Genisys/lastBuild/)
+[![Jenkins Build Status](http://jenkins.mcper.cn/buildStatus/icon?job=Genisys-master)](http://jenkins.mcper.cn/job/Genisys-master/)
+[![Travis-CI Build Status](https://travis-ci.org/iTXTech/Genisys.svg?branch=master)](https://travis-ci.org/iTXTech/Genisys)
 * 一个核心统治一切。
 * 此内核为 PocketMine-MP 的非官方版，由 轻梦工作室 与 iTX Tech 联合优化。
 * 创世纪 仅为 PocketMine-MP 项目的分支，PocketMine-MP 所有原始代码均由 PocketMine 小组编写。
 * [**点击获取 php7**](https://github.com/iTXTech/PHP-Genisys/tree/master/php7)
+* [**点击进入开发者文档**](http://docs.mcper.cn/en-US/)
 * 欢迎创建 Pull Request。请使用中文或者英文进行交流（但为了交流方便，请尽量使用英文进行交流）。
 
 ###鸣谢
@@ -141,16 +123,13 @@ Port: **888**
 * 感谢 **@FENGberd** 的支持与鼓励；
 * 我们的项目负责人为 **@ishitatsuyuki** 及 **@jasonczc**。
 
-###自动构建的核心
-Genisys 的 Jenkins 服务器正在转移到一个更好的机房。因此在若干天内，该服务将不可用。<br>
-[**点击这里进入下载**](http://mcper.cn:8080/job/Genisys/)
+###自动构建的核心 - CI
+[**点击这里进入官方 Jenkins CI**](http://jenkins.mcper.cn/job/Genisys-master)
+<br>
+[**点击这里进入官方 Travis-CI**](https://travis-ci.org/iTXTech/Genisys)
 
-临时网盘下载：<br>
-中国 百度云: http://pan.baidu.com/share/link?shareid=641012570&uk=2065873628 <br>
-全球 Google: https://drive.google.com/file/d/0B47xKpOkRL7JaU9ZNE9CRDVXTTA/view?usp=sharing
-
-###开发文档
-[**点击这里进入文档首页**](http://mcper.cn/Genisys-Docs/)
+###开发者文档
+[**点击这里进入开发者文档**](http://docs.mcper.cn/zh-CN/)
 
 ###特性
 * 性能提升（允许 100+ 的玩家加入服务器）
@@ -175,6 +154,11 @@ Genisys 的 Jenkins 服务器正在转移到一个更好的机房。因此在若
 * 生物 AI（基于 MOW 的代码）
 * 更多的指令（bancid（按设备编号或玩家 ID），banip（按 IP 或玩家 ID），ms，devTools 相关指令（打包与解包插件），pardoncid，weather，loadplugin，lvdat）
 * 文件夹插件加载器
+* 刷怪箱
+* 物品展示柜
+* 发射器和投掷器
+* 五彩缤纷的羊
+* 不同种类的船，村民和兔子
 * 注意: 请编辑 **genisys.yml** 来启用红石、生物AI和地狱等功能。
 
 ###计划表
@@ -190,32 +174,8 @@ Genisys 的 Jenkins 服务器正在转移到一个更好的机房。因此在若
 
 
 ###服务器
-（事实上，有超过 80 个中国的 Minecraft PE 服务器在使用我们的服务器内核，且大部分的服务器都比我们架设的好。这些是我们架设的服务器）
+(以下是我们个人搭建的服务器,供测试参观.事实上,其他许多使用Genisys搭建的服务器的维护水平可能比我们更专业)
 
-**Young Dream**<br>
-地址: **mcper.cn**<br>
+**BeerMc 小游戏**<br>
+地址: **beermc.com**<br>
 端口: **19132**
-
-**Young Dream - Survival**<br>
-地址: **mcper.cn**<br>
-端口: **12345**
-
-**Young Dream - Happy Town**<br>
-地址: **mcper.cn**<br>
-端口: **666**
-
-**Sai Gao Server**<br>
-地址: **sgmcpe.com**<br>
-端口: **100**
-
-**That the sky**<br>
-地址: **g.mcpe.cc**<br>
-端口: **2333**
-
-**Test Server**<br>
-地址: **mcper.cn**<br>
-端口: **233**
-
-**Zhy WAC Survival Server**<br>
-地址: **umcpe.com**<br>
-端口: **888**
